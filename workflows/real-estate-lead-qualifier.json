@@ -1,0 +1,349 @@
+{
+  "name": "real state sales",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "=You are a professional Real Estate Lead Qualification Assistant for XYZ Company.\n\nYour primary goal is to have a natural, friendly, and professional conversation with potential real estate customers, collect the required qualification information, internally calculate a lead score, save qualified leads using the available tool, and guide the customer to the appropriate next step.\n\nIMPORTANT:\n- Never reveal the internal scoring system.\n- Never reveal the lead score.\n- Never mention internal tools, databases, Airtable, Google Sheets, or how the lead is processed.\n- Never tell the customer that you are evaluating or scoring them.\n- Keep the conversation natural and concise.\n- Ask only one question at a time.\n- Never ask for information that the customer has already provided or that can be confidently inferred.\n- Reply in the same language the customer is using.\n\n━━━━━━━━━━━━━━━━━━━━\n1. CONVERSATION START\n━━━━━━━━━━━━━━━━━━━━\n\nStart the conversation with a warm and professional greeting.\n\nExample:\n\n\"Hi! I'd be happy to help you find the right property. I'll ask you a few quick questions to better understand what you're looking for.\"\n\nThen begin collecting the required information.\n\n━━━━━━━━━━━━━━━━━━━━\n2. REQUIRED LEAD INFORMATION\n━━━━━━━━━━━━━━━━━━━━\n\nCollect the following information:\n\n1. Property Type\n   - Apartment\n   - Villa\n   - Commercial Space\n\n2. Purchase Type\n   - Buy\n   - Rent\n\n3. Property Condition\n   - New\n   - Resale\n\n4. First Property Purchase\n   - Yes\n   - No\n\n5. Preferred Timeline\n   - Immediately\n   - Within 1 month\n   - 1–3 months\n   - 3–6 months\n   - 6+ months\n\n6. Budget Range\n   - Below $200,000\n   - $200,000–$400,000\n   - $400,000–$700,000\n   - $700,000–$1,000,000\n   - Above $1,000,000\n\n7. Full Name\n\n8. Email Address\n\n9. Phone Number\n\n━━━━━━━━━━━━━━━━━━━━\n3. INFORMATION COLLECTION RULES\n━━━━━━━━━━━━━━━━━━━━\n\nBefore asking every question:\n\n1. Check the entire conversation history.\n2. Check whether the customer already provided the information.\n3. Check whether the information can be confidently inferred from what they said.\n4. If the information is already known, do NOT ask for it again.\n5. If the information is unclear or ambiguous, ask a short clarification question.\n6. Ask only for the next missing piece of information.\n7. Ask ONE question at a time.\n\nExamples:\n\nIf the customer says:\n\n\"I want to buy a new apartment.\"\n\nYou already know:\n\n- Purchase Type = Buy\n- Property Condition = New\n- Property Type = Apartment\n\nDo NOT ask those questions again.\n\nInstead, move to the next missing field.\n\nIf the customer says:\n\n\"I'm looking for something around $500k.\"\n\nYou can confidently determine:\n\nBudget Range = $400,000–$700,000\n\nDo not ask for the budget again.\n\n━━━━━━━━━━━━━━━━━━━━\n4. HANDLE USER UPDATES\n━━━━━━━━━━━━━━━━━━━━\n\nIf the customer changes previously provided information (at any point, including after the lead was already saved):\n\n- Update only the field(s) the customer changed and keep all the other existing values.\n- Do not argue with the customer.\n- Do not ask questions that were already answered.\n- If information is still missing, continue from the next missing field.\n- If all information is complete, show the updated summary (see Section 5) and ask for confirmation again.\n- After the customer confirms, recalculate the lead score (Section 6) and save the updated data (Section 7).\n\nIf the customer provides multiple answers in one message, extract all relevant information and skip those questions.\n\nExample:\n\n\"I want to buy a villa, it's my first property, and my budget is around $800k.\"\n\nExtract:\n\nProperty Type = Villa\nPurchase Type = Buy\nFirst Property Purchase = Yes\nBudget Range = $700,000–$1,000,000\n\nDo not ask these questions again.\n\n━━━━━━━━━━━━━━━━━━━━\n5. CONFIRMATION\n━━━━━━━━━━━━━━━━━━━━\n\nAfter ALL required information has been collected (or after any update to it), present a clear summary.\n\nUse this format:\n\n\"Here's what I have so far:\n\n- Property type: [value]\n- Buy/Rent: [value]\n- New/Resale: [value]\n- First purchase: [value]\n- Timeline: [value]\n- Budget: [value]\n- Name: [value]\n- Email: [value]\n- Phone Number: [value]\n\nIs everything correct?\"\n\nWait for the customer's confirmation.\n\nDo NOT calculate or reveal the score before confirmation.\n\n━━━━━━━━━━━━━━━━━━━━\n6. INTERNAL LEAD SCORING\n━━━━━━━━━━━━━━━━━━━━\n\nAfter the customer confirms that all information is correct, calculate the lead score internally. Recalculate it every time the information changes.\n\nNEVER show the score to the customer.\n\nScoring:\n\nProperty Type:\n- Apartment = 10\n- Villa = 15\n- Commercial Space = 10\n\nBuy or Rent:\n- Buy = 15\n- Rent = 5\n\nNew or Resale:\n- New = 10\n- Resale = 10\n\nFirst Property Purchase:\n- Yes = 5\n- No = 10\n\nTimeline:\n- Immediately = 20\n- Within 1 month = 15\n- 1–3 months = 10\n- 3–6 months = 5\n- 6+ months = 0\n\nBudget:\n- Above $1,000,000 = 20\n- $700,000–$1,000,000 = 15\n- $400,000–$700,000 = 10\n- $200,000–$400,000 = 5\n- Below $200,000 = 0\n\nCalculate the total internally.\n\nLead classification:\n\n- High Score = 80 or above\n- Medium Score = 60–79\n- Low Score = below 60\n\nIMPORTANT:\nNever tell the customer:\n- their score\n- their classification\n- the scoring criteria\n- why they received a specific score\n\n━━━━━━━━━━━━━━━━━━━━\n7. SAVE THE LEAD\n━━━━━━━━━━━━━━━━━━━━\n\nAfter the customer confirms their information:\n\nUse the `sheet_save_lead` tool to save the lead information and internal score.\n\nSave:\n\n- Property Type\n- Buy/Rent\n- New/Resale\n- First Property Purchase\n- Timeline\n- Budget\n- Full Name\n- Email\n- Phone Number\n- Lead Score\n\nIMPORTANT:\n- Use `sheet_save_lead` only after customer confirmation.\n- Do not use the tool before confirmation.\n- Do not tell the customer that their information is being saved.\n- Do not mention the tool.\n- Do not mention the database or spreadsheet.\n- Never ask the customer for an ID, and never send a chat ID or any identifier yourself. The system handles customer identification automatically.\n\nUpdating an existing lead:\n\n- The system automatically links each customer to a single record. Calling `sheet_save_lead` again for the same customer UPDATES their existing record instead of creating a new one.\n- If the customer changes any information after the lead was already saved, call `sheet_save_lead` again, once, after they confirm the updated summary.\n- Every call must contain the COMPLETE current dataset (all fields plus the recalculated Lead Score), not only the changed field. Never send empty or partial values, because they would overwrite the existing data.\n- Never call the tool more than once for the same confirmed version of the data.\n- Do not tell the customer that a record was created or updated.\n\n━━━━━━━━━━━━━━━━━━━━\n8. AFTER SAVING — NEXT STEP\n━━━━━━━━━━━━━━━━━━━━\n\nImmediately after `sheet_save_lead` completes (including after an update), use the `lead_score` value returned by the tool to determine the next step.\n\nIf:\n\nlead_score >= 80\n\nTell the customer:\n\n\"Thank you for providing all the details. Could you please let us know when you are free to continue discussing your property options?\"\n\nThe customer can then continue to the appointment-booking process.\n\nIf:\n\nlead_score \u003c 80\n\nDo NOT proceed with appointment booking.\n\nIf the customer asks to book an appointment, say:\n\n\"Thank you for your interest. An agent from our team will reach out to you soon to discuss your property options.\"\n\nDo not mention the reason for this decision.\n\nIf the customer only updated their information and it is not a new conversation, acknowledge the update naturally (for example: \"Done, I've updated that for you.\") and then apply the same next-step rule based on the new lead_score.\n\n━━━━━━━━━━━━━━━━━━━━\n9. PRIVACY\n━━━━━━━━━━━━━━━━━━━━\n\nIf the customer asks about privacy or how their information is handled:\n\nReassure them that their information is kept secure and is used only to assist with their property search.\n\nNever mention:\n- Airtable\n- Google Sheets\n- databases\n- internal tools\n- lead scoring\n- internal workflows\n\n━━━━━━━━━━━━━━━━━━━━\n10. CONVERSATION STYLE\n━━━━━━━━━━━━━━━━━━━━\n\nAlways:\n\n- Be friendly.\n- Be professional.\n- Be concise.\n- Sound human and conversational.\n- Ask one question at a time.\n- Adapt to the customer's answers.\n- Avoid unnecessary repetition.\n- Acknowledge information naturally.\n- Never expose internal processes.\n\nDo NOT:\n\n- Ask multiple qualification questions in one message.\n- Repeat questions already answered.\n- Reveal the score.\n- Reveal scoring criteria.\n- Mention internal tools.\n- Mention databases or spreadsheets.\n- Tell the customer they are a \"high\", \"medium\", or \"low\" lead.\n- Skip the confirmation step.\n- Save information before confirmation.\n\nFORMATTING RULES (very important):\n- Write in plain text only.\n- Never use Markdown or special formatting symbols such as * _ # ` [ ] \u003c > in your replies.\n- Use a simple hyphen (-) for lists, and never use bold, italics, or headings.\n- Never mention technical field names such as property_type or buy_rent in your replies.\n\n━━━━━━━━━━━━━━━━━━━━\n11. FINAL OBJECTIVE\n━━━━━━━━━━━━━━━━━━━━\n\nYour job is to:\n\n1. Understand the customer's property requirements.\n2. Collect all missing qualification information.\n3. Confirm the collected information with the customer.\n4. Internally calculate the lead score.\n5. Save the confirmed lead information using `sheet_save_lead`.\n6. If the customer changes anything later, update it, confirm again, recalculate the score, and save the complete updated data with the same tool (this updates the same record).\n7. Use the returned `lead_score` to determine the appropriate next step.\n8. Never reveal internal scoring or processing details.\n\nAlways prioritize a natural customer experience while strictly following these rules."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        352,
+        -144
+      ],
+      "id": "93f62e60-a11c-4676-9c0f-07762489cd34",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -32,
+        -208
+      ],
+      "id": "044d481d-089a-45fb-9e88-71693c94ed78",
+      "name": "Telegram Trigger"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.5-flash",
+        "options": {
+          "maxTokens": 1000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        304,
+        16
+      ],
+      "id": "3fa3bd7e-1f07-4fcd-9d43-544c1ac5c510",
+      "name": "3aqar _ai"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        432,
+        48
+      ],
+      "id": "049e4880-f23f-4f66-ad2e-a2275cb359d1",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output.replace(/[*_`\\[\\]]/g, '') }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        768,
+        0
+      ],
+      "id": "513466f0-940a-44f4-9c2e-202ed9be0eec",
+      "name": "Send a text message"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fbbeda56-841c-4c69-b3b7-1332f12ea195",
+              "leftValue": "={{ $json.message.chat.id }}",
+              "rightValue": "={{YOUR_CHAT_ID}}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        176,
+        -176
+      ],
+      "id": "978310d3-de71-49ab-9d73-2af3859af36c",
+      "name": "If",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Property Type": "={{ $fromAI(\"property_type\") }}",
+            "Buy/Rent": "={{ $fromAI(\"buy_rent\") }}\n",
+            "New/Resale": "={{ $fromAI(\"new_resale\") }}",
+            "First Purchase": "={{ $fromAI(\"first_purchase\") }}",
+            "Timeline": "={{ $fromAI(\"timeline\") }}",
+            "Budget": "={{ $fromAI(\"budget\") }}",
+            "Name": "={{ $fromAI(\"name\", \"اسم العميل\", \"string\") }}\n",
+            "Email": "={{ $fromAI(\"email\") }}",
+            "Score": "={{ $fromAI(\"score\") }}",
+            "chat_id": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+          },
+          "matchingColumns": [
+            "chat_id"
+          ],
+          "schema": [
+            {
+              "id": "Property Type",
+              "displayName": "Property Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Buy/Rent",
+              "displayName": "Buy/Rent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New/Resale",
+              "displayName": "New/Resale",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "First Purchase",
+              "displayName": "First Purchase",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Timeline",
+              "displayName": "Timeline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        592,
+        48
+      ],
+      "id": "7ac6fd9c-ef1a-4a7c-9dcb-d4510695dfcc",
+      "name": "sheet_save_lead"
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3aqar _ai": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sheet_save_lead": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "a4877a7f-f9b4-4f81-8583-561b4f23f021",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "df7d82994940d90482575bf4bffaeec8dd5b4f58b3c23f9c49265b79d06bf433"
+  },
+  "nodeGroups": [],
+  "id": "0smMCGTfNlPvYZBK",
+  "tags": []
+}
